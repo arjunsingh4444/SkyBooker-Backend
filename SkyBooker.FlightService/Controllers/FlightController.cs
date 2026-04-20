@@ -15,7 +15,7 @@ public class FlightController : ControllerBase
         _service = service;
     }
 
-    // ✅ POST: Add Flight
+    //  POST: Add Flight
     [HttpPost]
     public async Task<IActionResult> Add(FlightDto dto)
     {
@@ -23,7 +23,7 @@ public class FlightController : ControllerBase
         return Ok("Flight added successfully");
     }
 
-    // ✅ GET: By Flight ID
+    // GET: By Flight ID
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -35,7 +35,7 @@ public class FlightController : ControllerBase
         return Ok(flight);
     }
 
-    // ✅ GET: By Flight Number
+    //  GET: By Flight Number
     [HttpGet("number/{flightNumber}")]
     public async Task<IActionResult> GetByNumber(string flightNumber)
     {
@@ -47,7 +47,7 @@ public class FlightController : ControllerBase
         return Ok(flight);
     }
 
-    // ✅ GET: Search One Way
+    //  GET: Search One Way
     [HttpGet("search")]
     public async Task<IActionResult> Search(
         string origin,
@@ -59,7 +59,7 @@ public class FlightController : ControllerBase
         return Ok(flights);
     }
 
-    // ✅ GET: Round Trip Search
+    //  GET: Round Trip Search
     [HttpGet("roundtrip")]
     public async Task<IActionResult> RoundTrip(
         string origin,
@@ -72,7 +72,7 @@ public class FlightController : ControllerBase
         return Ok(result);
     }
 
-    // ✅ PUT: Update Flight
+    // PUT: Update Flight
     [HttpPut]
     public async Task<IActionResult> Update(FlightDto dto)
     {
@@ -80,7 +80,7 @@ public class FlightController : ControllerBase
         return Ok("Flight updated successfully");
     }
 
-    // ✅ PUT: Update Status
+    // PUT: Update Status
     [HttpPut("status")]
     public async Task<IActionResult> UpdateStatus(int flightId, string status)
     {
@@ -88,7 +88,7 @@ public class FlightController : ControllerBase
         return Ok("Status updated successfully");
     }
 
-    // ✅ PUT: Decrement Seats
+    // PUT: Decrement Seats
     [HttpPut("decrement-seats")]
     public async Task<IActionResult> DecrementSeats(int flightId, int count)
     {
@@ -96,7 +96,7 @@ public class FlightController : ControllerBase
         return Ok("Seats decremented");
     }
 
-    // ✅ PUT: Increment Seats
+    // PUT: Increment Seats
     [HttpPut("increment-seats")]
     public async Task<IActionResult> IncrementSeats(int flightId, int count)
     {
@@ -104,7 +104,7 @@ public class FlightController : ControllerBase
         return Ok("Seats incremented");
     }
 
-    // ✅ DELETE: Delete Flight
+    //  DELETE: Delete Flight
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -112,7 +112,7 @@ public class FlightController : ControllerBase
         return Ok("Flight deleted successfully");
     }
 
-    // ✅ GET: Flights by Airline
+    // GET: Flights by Airline
     [HttpGet("airline/{airlineId}")]
     public async Task<IActionResult> GetByAirline(int airlineId)
     {

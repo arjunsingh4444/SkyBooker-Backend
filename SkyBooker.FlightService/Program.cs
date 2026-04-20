@@ -7,38 +7,38 @@ using SkyBooker.FlightService.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔹 Add Controllers
+// Add Controllers
 builder.Services.AddControllers();
 
-// 🔹 Swagger
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 🔹 DB Context
+//DB Context
 builder.Services.AddDbContext<FlightDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 🔹 Dependency Injection
+// Dependency Injection
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
 builder.Services.AddScoped<IFlightService, FlightService>();
 
 var app = builder.Build();
 
-// 🔥 Custom Middlewares (Optional but recommended)
+// Custom Middlewares (Optional but recommended)
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
 
-// 🔹 Swagger UI
+// Swagger UI
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// 🔹 HTTPS
+// HTTPS
 app.UseHttpsRedirection();
 
-// 🔹 Authorization (future use)
+// Authorization (future use)
 app.UseAuthorization();
 
-// 🔹 Map Controllers
+// Map Controllers
 app.MapControllers();
 
 app.Run();

@@ -49,7 +49,7 @@ public class FlightService : IFlightService
     public async Task<List<FlightDto>> SearchFlights(string origin, string dest, DateTime date)
         => (await _repo.FindAvailableFlights(origin, dest, date)).Select(Map).ToList();
 
-    // 🔥 ROUND TRIP
+    // ROUND TRIP
     public async Task<Dictionary<string, IList<FlightDto>>> SearchRoundTrip(
         string origin, string dest, DateTime departDate, DateTime returnDate)
     {
