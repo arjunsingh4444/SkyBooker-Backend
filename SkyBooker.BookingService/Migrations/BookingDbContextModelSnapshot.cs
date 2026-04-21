@@ -53,12 +53,11 @@ namespace SkyBooker.BookingService.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PaymentId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PnrCode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -78,6 +77,9 @@ namespace SkyBooker.BookingService.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("BookingId");
+
+                    b.HasIndex("PnrCode")
+                        .IsUnique();
 
                     b.ToTable("Bookings");
                 });

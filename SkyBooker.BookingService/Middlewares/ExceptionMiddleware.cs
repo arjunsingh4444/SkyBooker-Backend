@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json;
 
-namespace SkyBooker.BookingService.Middlewares;
+namespace SkyBooker.BookingService.Middleware;
 
 public class ExceptionMiddleware
 {
@@ -26,8 +26,7 @@ public class ExceptionMiddleware
             var response = new
             {
                 message = ex.Message,
-                status = context.Response.StatusCode,
-                time = DateTime.UtcNow
+                statusCode = context.Response.StatusCode
             };
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));

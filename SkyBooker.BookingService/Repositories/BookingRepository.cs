@@ -14,20 +14,32 @@ public class BookingRepository : IBookingRepository
         _context = context;
     }
 
+    public async Task<Booking?> FindByBookingId(Guid id)
+        => await _context.Bookings.FindAsync(id);
+
+    public async Task<Booking?> FindByPnrCode(string pnr)
+        => await _context.Bookings.FirstOrDefaultAsync(b => b.PnrCode == pnr);
+
+    public async Task<List<Booking>> FindByUserId(int userId)
+        => await _context.Bookings.Where(b => b.UserId == userId).ToListAsync();
+
+    public async Task<List<Booking>> FindByFlightId(int flightId)
+        => await _context.Bookings.Where(b => b.FlightId == flightId).ToListAsync();
+
+    public async Task<List<Booking>> FindByStatus(string status)
+        => await _context.Bookings.Where(b => b.Status == status).ToListAsync();
+
+    public async Task<int> CountByFlightIdAndStatus(int flightId, string status)
+        => await _context.Bookings.CountAsync(b => b.FlightId == flightId && b.Status == status);
+
+    public async Task<List<Booking>> FindByUserIdAndStatus(int userId, string status)
+        => await _context.Bookings.Where(b => b.UserId == userId && b.Status == status).ToListAsync();
+
     public async Task Add(Booking booking)
     {
         _context.Bookings.Add(booking);
         await _context.SaveChangesAsync();
     }
-
-    public async Task<Booking?> GetById(Guid id)
-        => await _context.Bookings.FindAsync(id);
-
-    public async Task<Booking?> GetByPnr(string pnr)
-        => await _context.Bookings.FirstOrDefaultAsync(x => x.PnrCode == pnr);
-
-    public async Task<List<Booking>> GetByUser(int userId)
-        => await _context.Bookings.Where(x => x.UserId == userId).ToListAsync();
 
     public async Task Update(Booking booking)
     {

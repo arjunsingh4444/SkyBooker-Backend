@@ -7,5 +7,14 @@ public class BookingDbContext : DbContext
 {
     public BookingDbContext(DbContextOptions<BookingDbContext> options) : base(options) {}
 
-    public DbSet<Booking> Bookings { get; set; }
+    public DbSet<Booking> Bookings => Set<Booking>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Booking>()
+            .HasIndex(b => b.PnrCode)
+            .IsUnique();
+
+        base.OnModelCreating(modelBuilder);
+    }
 }

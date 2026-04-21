@@ -12,7 +12,7 @@ using SkyBooker.BookingService.Data;
 namespace SkyBooker.BookingService.Migrations
 {
     [DbContext(typeof(BookingDbContext))]
-    [Migration("20260420054147_InitialCreate")]
+    [Migration("20260420103609_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -56,12 +56,11 @@ namespace SkyBooker.BookingService.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PaymentId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PnrCode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -81,6 +80,9 @@ namespace SkyBooker.BookingService.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("BookingId");
+
+                    b.HasIndex("PnrCode")
+                        .IsUnique();
 
                     b.ToTable("Bookings");
                 });

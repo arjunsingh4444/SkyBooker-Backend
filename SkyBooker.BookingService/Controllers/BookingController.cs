@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkyBooker.BookingService.DTOs;
 using SkyBooker.BookingService.Interfaces;
@@ -6,6 +7,7 @@ namespace SkyBooker.BookingService.Controllers;
 
 [ApiController]
 [Route("api/bookings")]
+[Authorize]
 public class BookingController : ControllerBase
 {
     private readonly IBookingService _service;
@@ -31,6 +33,14 @@ public class BookingController : ControllerBase
     public async Task<IActionResult> GetByUser(int userId)
         => Ok(await _service.GetBookingsByUser(userId));
 
+    [HttpGet("flight/{flightId}")]
+    public async Task<IActionResult> GetByFlight(int flightId)
+        => Ok(await _service.GetBookingsByFlight(flightId));
+
+    [HttpGet("upcoming/{userId}")]
+    public async Task<IActionResult> Upcoming(int userId)
+        => Ok(await _service.GetUpcomingBookings(userId));
+
     [HttpPut("cancel/{id}")]
     public async Task<IActionResult> Cancel(Guid id)
     {
@@ -38,7 +48,21 @@ public class BookingController : ControllerBase
         return Ok("Cancelled");
     }
 
+    [HttpPut("status")]
+    public async Task<IActionResult> UpdateStatus(Guid id, string status)
+    {
+        await _service.UpdateStatus(id, status);
+        return Ok();
+    }
+
     [HttpGet("fare")]
-    public async Task<IActionResult> Fare(int seats, int luggage)
-        => Ok(await _service.CalculateFare(seats, luggage));
+    public async Task<IActionResult> Fare(decimal baseFare, decimal taxes, decimal ancillary)
+        => Ok(await _service.CalculateFare(baseFare, taxes, ancillary));
+
+    [HttpPost("addon")]
+    public async Task<IActionResult> AddOn(AddOnDto dto)
+    {
+        await _service.AddAddOn(dto);
+        return Ok();
+    }
 }
