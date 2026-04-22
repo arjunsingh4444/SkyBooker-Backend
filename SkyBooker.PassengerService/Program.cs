@@ -48,6 +48,20 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
+// ADD CORS (IMPORTANT FIX)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+
 // DB
 builder.Services.AddDbContext<PassengerDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -55,6 +69,7 @@ builder.Services.AddDbContext<PassengerDbContext>(options =>
 // DI
 builder.Services.AddScoped<IPassengerRepository, PassengerRepository>();
 builder.Services.AddScoped<IPassengerService, PassengerService>();
+
 
 // JWT AUTH
 var jwt = builder.Configuration.GetSection("Jwt");
@@ -86,13 +101,21 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+
 // Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
 
+
 // Pipeline
 app.UseHttpsRedirection();
+
+// ENABLE CORS (VERY IMPORTANT POSITION)
+app.UseCors("AllowFrontend");
+
+// Middleware (same as other services)
 app.UseMiddleware<JwtMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
