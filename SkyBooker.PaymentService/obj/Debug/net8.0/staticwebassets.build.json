@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "rpMqt8JxJs66ZM287K8/TPf+BRcTRPNuPZ3phphT0MI=",
+  "Source": "SkyBooker.PaymentService",
+  "BasePath": "_content/SkyBooker.PaymentService",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
