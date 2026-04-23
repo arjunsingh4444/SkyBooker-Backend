@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkyBooker.AuthService.DTOs;
 using SkyBooker.AuthService.Interfaces;
@@ -15,47 +16,64 @@ public class AuthController : ControllerBase
         _service = service;
     }
 
+    // REGISTER
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterRequestDto dto)
-        => Ok(await _service.Register(dto));
-
-    [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequestDto dto)
-        => Ok(await _service.Login(dto));
-
-    [HttpPost("logout")]
-    public async Task<IActionResult> Logout()
+    public async Task<IActionResult> Register(RegisterDto dto)
     {
-        await _service.Logout();
-        return Ok("Logged out");
+        await _service.Register(dto);
+        return Ok("User registered successfully");
     }
 
+    // LOGIN
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginDto dto)
+    {
+        var token = await _service.Login(dto);
+        return Ok(new { token });
+    }
+
+    //GET PROFILE
+    [Authorize]
     [HttpGet("profile/{id}")]
     public async Task<IActionResult> GetProfile(int id)
-        => Ok(await _service.GetUserById(id));
-
-    [HttpPut("profile")]
-    public async Task<IActionResult> UpdateProfile(UserDto dto)
     {
-        await _service.UpdateProfile(dto);
-        return Ok("Updated");
+        var user = await _service.GetProfile(id);
+        return Ok(user);
     }
 
-    [HttpPut("password")]
-    public async Task<IActionResult> ChangePassword(int userId, string newPassword)
+    // UPDATE PROFILE
+    [Authorize]
+    [HttpPut("profile")]
+    public async Task<IActionResult> UpdateProfile(UpdateProfileDto dto)
     {
-        await _service.ChangePassword(userId, newPassword);
+        await _service.UpdateProfile(dto);
+        return Ok("Profile updated");
+    }
+
+    // CHANGE PASSWORD
+    [Authorize]
+    [HttpPut("password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+    {
+        await _service.ChangePassword(dto);
         return Ok("Password changed");
     }
 
-    [HttpDelete("deactivate/{userId}")]
-    public async Task<IActionResult> Deactivate(int userId)
+    //DEACTIVATE ACCOUNT
+    [Authorize]
+    [HttpDelete("deactivate/{id}")]
+    public async Task<IActionResult> Deactivate(int id)
     {
-        await _service.DeactivateAccount(userId);
-        return Ok("Deactivated");
+        await _service.Deactivate(id);
+        return Ok("Account deactivated");
     }
 
+    // GET ALL USERS (ADMIN ONLY)
+    [Authorize(Roles = "ADMIN")]
     [HttpGet("users")]
     public async Task<IActionResult> GetUsers()
-        => Ok(await _service.GetAllUsers());
+    {
+        var users = await _service.GetUsers();
+        return Ok(users);
+    }
 }

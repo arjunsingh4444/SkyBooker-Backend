@@ -1,7 +1,6 @@
 using System.Net;
-using System.Text.Json;
 
-namespace SkyBooker.AuthService.Middlewares;
+namespace SkyBooker.AuthService.Middleware;
 
 public class ExceptionMiddleware
 {
@@ -23,13 +22,11 @@ public class ExceptionMiddleware
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.ContentType = "application/json";
 
-            var response = new
-            {
-                message = ex.Message,
-                status = context.Response.StatusCode
-            };
-
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            await context.Response.WriteAsync(
+                System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    message = ex.Message
+                }));
         }
     }
 }

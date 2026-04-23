@@ -1,6 +1,6 @@
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 namespace SkyBooker.AuthService.Helpers;
@@ -14,24 +14,31 @@ public class JwtHelper
         _config = config;
     }
 
-    public string GenerateToken(string email)
+    public string GenerateToken(string email, string role)
     {
-        var key = _config["Jwt:Key"];
+        var jwt = _config.GetSection("Jwt");
 
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-        var creds = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var secret = jwt["Secret"];
+        if (string.IsNullOrEmpty(secret))
+            throw new Exception("JWT Secret missing");
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(secret));
+
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.Email, email)
+            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.Role, role)
         };
 
         var token = new JwtSecurityToken(
-            issuer: _config["Jwt:Issuer"],
-            claims: claims,
-            expires: DateTime.Now.AddHours(2),
-            signingCredentials: creds
-        );
+            jwt["Issuer"],
+            jwt["Audience"],
+            claims,
+            expires: DateTime.UtcNow.AddHours(2),
+            signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }

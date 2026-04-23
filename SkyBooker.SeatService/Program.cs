@@ -30,7 +30,7 @@ builder.Services.AddSwaggerGen(options =>
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey,
         In = ParameterLocation.Header,
-        Description = "Enter JWT token only (no Bearer needed)"
+        Description = "Enter JWT token only"
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -49,6 +49,18 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// CORS (IMPORTANT)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // DB
 builder.Services.AddDbContext<SeatDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -57,12 +69,11 @@ builder.Services.AddDbContext<SeatDbContext>(options =>
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddScoped<ISeatService, SeatService>();
 
-//  Background service (seat hold TTL)
+// Background service (seat hold TTL)
 builder.Services.AddHostedService<SeatHoldCleanupService>();
 
-// JWT AUTH (same as AuthService)
+// JWT AUTH
 var jwt = builder.Configuration.GetSection("Jwt");
-var secret = jwt["Secret"];
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -81,7 +92,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = jwt["Audience"],
 
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(secret!)),
+                Encoding.UTF8.GetBytes(jwt["Secret"]!)),
 
             ClockSkew = TimeSpan.Zero
         };
@@ -95,19 +106,24 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
 // Pipeline
 app.UseHttpsRedirection();
 
-//  Logging (optional)
+// CORS MUST COME BEFORE AUTH
+app.UseCors("AllowFrontend");
+
+// Logging (optional)
 app.UseMiddleware<RequestLoggingMiddleware>();
 
-//  Global exception handler
+// Global exception handler
 app.UseMiddleware<ExceptionMiddleware>();
 
-//  Auto add Bearer
+// Auto add Bearer
 app.UseMiddleware<JwtMiddleware>();
 
-//  Auth
+// Auth
 app.UseAuthentication();
 app.UseAuthorization();
 

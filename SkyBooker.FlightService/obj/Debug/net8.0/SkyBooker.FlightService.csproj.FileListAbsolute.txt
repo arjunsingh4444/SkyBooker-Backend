@@ -136,3 +136,4 @@
 /Users/arjunsingh/Documents/SkyBooker-Backend/SkyBooker.FlightService/obj/Debug/net8.0/SkyBooker.FlightService.pdb
 /Users/arjunsingh/Documents/SkyBooker-Backend/SkyBooker.FlightService/obj/Debug/net8.0/SkyBooker.FlightService.genruntimeconfig.cache
 /Users/arjunsingh/Documents/SkyBooker-Backend/SkyBooker.FlightService/obj/Debug/net8.0/ref/SkyBooker.FlightService.dll
+/Users/arjunsingh/Documents/SkyBooker-Backend/SkyBooker.FlightService/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll

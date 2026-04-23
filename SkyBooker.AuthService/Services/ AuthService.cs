@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using SkyBooker.AuthService.DTOs;
 using SkyBooker.AuthService.Entities;
-using SkyBooker.AuthService.Interfaces;
 using SkyBooker.AuthService.Helpers;
+using SkyBooker.AuthService.Interfaces;
 
 namespace SkyBooker.AuthService.Services;
 
@@ -18,102 +18,70 @@ public class AuthService : IAuthService
         _jwt = jwt;
     }
 
-    public async Task<AuthResponseDto> Register(RegisterRequestDto dto)
+    public async Task Register(RegisterDto dto)
     {
-        if (await _repo.ExistsByEmail(dto.Email))
-            throw new Exception("Email exists");
+        var exists = await _repo.FindByEmail(dto.Email);
+        if (exists != null) throw new Exception("User exists");
 
         var user = new User
         {
             FullName = dto.FullName,
-            Email = dto.Email
+            Email = dto.Email,
+            Role = "USER"
         };
 
         user.PasswordHash = _hasher.HashPassword(user, dto.Password);
-
-        await _repo.AddUser(user);
-
-        return new AuthResponseDto
-        {
-            Email = user.Email,
-            Token = _jwt.GenerateToken(user.Email)
-        };
+        await _repo.Add(user);
     }
 
-    public async Task<AuthResponseDto> Login(LoginRequestDto dto)
+    public async Task<string> Login(LoginDto dto)
     {
         var user = await _repo.FindByEmail(dto.Email);
+        if (user == null) throw new Exception("Invalid credentials");
 
-        if (user == null ||
-            _hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password)
-            == PasswordVerificationResult.Failed)
+        var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+        if (result == PasswordVerificationResult.Failed)
             throw new Exception("Invalid credentials");
 
-        return new AuthResponseDto
-        {
-            Email = user.Email,
-            Token = _jwt.GenerateToken(user.Email)
-        };
+        return _jwt.GenerateToken(user.Email, user.Role ?? "USER");
     }
 
-    public Task Logout() => Task.CompletedTask;
+    public async Task<User?> GetProfile(int id)
+        => await _repo.FindByUserId(id);
 
-    public Task<string> RefreshToken(string email)
-        => Task.FromResult(_jwt.GenerateToken(email));
-
-    public async Task<UserDto?> GetUserById(int userId)
-    {
-        var user = await _repo.FindByUserId(userId);
-        if (user == null) return null;
-
-        return new UserDto
-        {
-            UserId = user.UserId,
-            Email = user.Email,
-            FullName = user.FullName
-        };
-    }
-
-    public async Task UpdateProfile(UserDto dto)
+    public async Task UpdateProfile(UpdateProfileDto dto)
     {
         var user = await _repo.FindByUserId(dto.UserId);
         if (user == null) return;
 
         user.FullName = dto.FullName;
-        user.Email = dto.Email;
+        user.Phone = dto.Phone;
 
-        await _repo.UpdateUser(user);
+        await _repo.Update(user);
     }
 
-    public async Task ChangePassword(int userId, string newPassword)
+    public async Task ChangePassword(ChangePasswordDto dto)
     {
-        var user = await _repo.FindByUserId(userId);
+        var user = await _repo.FindByUserId(dto.UserId);
         if (user == null) return;
 
-        user.PasswordHash = _hasher.HashPassword(user, newPassword);
+        var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, dto.OldPassword);
+        if (result == PasswordVerificationResult.Failed)
+            throw new Exception("Wrong password");
 
-        await _repo.UpdateUser(user);
+        user.PasswordHash = _hasher.HashPassword(user, dto.NewPassword);
+        await _repo.Update(user);
     }
 
-    public async Task DeactivateAccount(int userId)
+    public async Task Deactivate(int id)
     {
-        var user = await _repo.FindByUserId(userId);
+        var user = await _repo.FindByUserId(id);
         if (user == null) return;
 
         user.IsActive = false;
-
-        await _repo.UpdateUser(user);
+        await _repo.Update(user);
     }
 
-    public async Task<List<UserDto>> GetAllUsers()
-    {
-        var users = await _repo.FindAllByRole("PASSENGER");
-
-        return users.Select(u => new UserDto
-        {
-            UserId = u.UserId,
-            Email = u.Email,
-            FullName = u.FullName
-        }).ToList();
-    }
+    public async Task<List<User>> GetUsers()
+        => await _repo.GetAll();
 }

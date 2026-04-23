@@ -1,16 +1,15 @@
 using SkyBooker.AuthService.DTOs;
+using SkyBooker.AuthService.Entities;
 
 namespace SkyBooker.AuthService.Interfaces;
 
 public interface IAuthService
 {
-    Task<AuthResponseDto> Register(RegisterRequestDto dto);
-    Task<AuthResponseDto> Login(LoginRequestDto dto);
-    Task Logout();
-    Task<string> RefreshToken(string email);
-    Task<UserDto?> GetUserById(int userId);
-    Task UpdateProfile(UserDto dto);
-    Task ChangePassword(int userId, string newPassword);
-    Task DeactivateAccount(int userId);
-    Task<List<UserDto>> GetAllUsers();
+    Task Register(RegisterDto dto);
+    Task<string> Login(LoginDto dto);
+    Task<User?> GetProfile(int id);
+    Task UpdateProfile(UpdateProfileDto dto);
+    Task ChangePassword(ChangePasswordDto dto);
+    Task Deactivate(int id);
+    Task<List<User>> GetUsers();
 }

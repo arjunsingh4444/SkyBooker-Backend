@@ -24,7 +24,6 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1"
     });
 
-    // Token input (no Bearer required)
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -49,6 +48,20 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+
+// ADD CORS (THIS FIXES YOUR ERROR)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+
 // DB
 builder.Services.AddDbContext<BookingDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -57,7 +70,8 @@ builder.Services.AddDbContext<BookingDbContext>(options =>
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 
-// JWT AUTH (same as AuthService)
+
+// JWT AUTH
 var jwt = builder.Configuration.GetSection("Jwt");
 var secret = jwt["Secret"];
 
@@ -88,12 +102,19 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+
 // Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
+
 // Pipeline
 app.UseHttpsRedirection();
+
+// ENABLE CORS (VERY IMPORTANT POSITION)
+app.UseCors("AllowFrontend");
 
 // Logging (optional)
 app.UseMiddleware<RequestLoggingMiddleware>();

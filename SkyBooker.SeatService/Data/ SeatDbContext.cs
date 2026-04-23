@@ -15,6 +15,10 @@ public class SeatDbContext : DbContext
             .HasIndex(s => new { s.FlightId, s.SeatNumber })
             .IsUnique();
 
+        modelBuilder.Entity<Seat>()
+            .Property(s => s.PriceMultiplier)
+            .HasColumnType("decimal(18,2)");
+
         base.OnModelCreating(modelBuilder);
     }
 }

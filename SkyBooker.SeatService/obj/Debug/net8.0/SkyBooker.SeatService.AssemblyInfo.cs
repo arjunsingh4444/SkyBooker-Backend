@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SkyBooker.SeatService")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1e8a9331ba193b8c6d2154480b555504389f5c2c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fe4ac91feb4b790329791e31186a542264a187ce")]
 [assembly: System.Reflection.AssemblyProductAttribute("SkyBooker.SeatService")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SkyBooker.SeatService")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

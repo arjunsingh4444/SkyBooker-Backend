@@ -48,10 +48,10 @@ public class BookingService : IBookingService
 
             await _repo.Add(booking);
 
-            // 🔗 TODO: call SeatService -> HOLD seats
+            //  call SeatService -> HOLD seats
             // await _seatClient.HoldSeats(...);
 
-            // 🔗 TODO: call FlightService -> DECREMENT seats
+            //  TODO: call FlightService -> DECREMENT seats
             // await _flightClient.DecrementSeats(dto.FlightId, count);
 
             await tx.CommitAsync();
@@ -83,8 +83,8 @@ public class BookingService : IBookingService
 
         booking.Status = "CANCELLED";
 
-        // 🔗 TODO: increment seats back
-        // 🔗 TODO: release seats
+        // TODO: increment seats back
+        // TODO: release seats
 
         await _repo.Update(booking);
     }
